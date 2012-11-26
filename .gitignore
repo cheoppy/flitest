@@ -1,3 +1,6 @@
+# Netbeans files
+nbproject/*
+
 # Object files
 *.o
 
@@ -15,3 +18,7 @@
 *.exe
 *.out
 *.app
+
+# Binaries
+fliflttest
+flicamtest
