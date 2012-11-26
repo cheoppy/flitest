@@ -8,6 +8,8 @@
 #ifndef FLICAMTEST_H
 #define	FLICAMTEST_H
 
+#include "fli_common.h"
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -17,6 +19,8 @@ extern "C" {
   int camera_get_temp();
   int camera_info();
   int camera_set_fan(int status);
+  int camera_set_temp(int set_temp);
+  int camera_control_shutter(int status);
 
 #ifdef	__cplusplus
 }

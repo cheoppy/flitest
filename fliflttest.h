@@ -8,6 +8,8 @@
 #ifndef FLIFLTTEST_H
 #define	FLIFLTTEST_H
 
+#include "fli_common.h"
+
 #ifdef	__cplusplus
 extern "C" {
 #endif

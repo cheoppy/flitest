@@ -8,9 +8,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "fli_common.h"
-#include "libfli.h"
 #include "fliflttest.h"
+
+extern fli_status * fli;
 
 int main(int argc, char** argv) {
   int i, ret, position;

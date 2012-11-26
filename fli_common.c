@@ -1,5 +1,22 @@
 #include "fli_common.h"
 
+/* domains for the FLIList command  */
+flidomain_t FLI_USB_CAMERA_DOMAIN = FLIDOMAIN_USB | FLIDEVICE_CAMERA;
+flidomain_t FLI_USB_FILTER_DOMAIN = FLIDOMAIN_USB | FLIDEVICE_FILTERWHEEL;
+
+/* global status variable for the fli devices */
+fli_status fli_m = {
+  .num_filters = 0,
+  .num_cameras = 0,
+  .cameras = NULL,
+  .filters = NULL,
+  .current_filter = -1,
+  .active_camera = FLI_INVALID_DEVICE,
+  .active_filter = FLI_INVALID_DEVICE,
+  .set_1mhz_speed = 0
+};
+fli_status * fli = &fli_m;
+
 /**
  * Translates the error codes of libfli to legible error messages
  *
@@ -122,7 +139,6 @@ int fli_unlock_and_close_device(flidev_t * fli_dev) {
  */
 int fli_scan() {
   int ret;
-  fprintf(stdout, "scanning for FLI devices\n");
   ret = fli_scan_domain("camera", FLI_USB_CAMERA_DOMAIN, &fli->cameras, &fli->num_cameras);
   if (ret) return ret;
 
@@ -152,7 +168,6 @@ int fli_scan_domain(char * device_type, flidomain_t domain, char *** device_list
   }
   *device_count = k;
 
-  fprintf(stdout, "found %d %s(s)\n", (*device_count), device_type);
 
   /* store the number of devices in the according struct */
   *device_list = (char**) malloc((*device_count) * sizeof (char*));
@@ -167,8 +182,6 @@ int fli_scan_domain(char * device_type, flidomain_t domain, char *** device_list
     (*device_list)[k] = (char*) malloc((position + 1) * sizeof (char));
     memcpy((*device_list)[k], fli_list[k], position);
     (*device_list)[k][position] = '\0';
-
-    fprintf(stdout, "found %s: %s\n", device_type, (*device_list)[k]);
   }
 
   /* free the FLI device list */
