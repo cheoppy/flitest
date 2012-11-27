@@ -10,154 +10,201 @@
 #include "flicamtest.h"
 #include <argtable2.h>
 
+#define NUMBER_OF_DIFFERENT_SYNTAXES 6
+
 extern fli_status * fli;
 
+struct arg_lit *info1, *gettemp2, *verbose5, *help6;
+struct arg_str *fan4, *acquire5, *shutter5, *bin5, *size5, *offset5, *gain5, *mode5;
+struct arg_int *settemp3;
+struct arg_file *output5;
+struct arg_end *end1, *end2, *end3, *end4, *end5, *end6;
+
+void **argtable[NUMBER_OF_DIFFERENT_SYNTAXES];
+
+const char* progname = "flicamtest";
 
 int main(int argc, char** argv) {
-  int i, ret;
-  int set_temp;
-  double exposure_time, gain = 1.0;
-  int is_dark = 0, is_verbose = 0;
-  char * output_filename;
-  char * binning_options;
-  char *offset_options;
-  char *size_options;
-  char *download_speed;
+  int ret, i;
+  int nerrors[NUMBER_OF_DIFFERENT_SYNTAXES];
 
-  output_filename = "";
-  binning_options = "";
-  offset_options = "";
-  size_options = "";
-  download_speed = "";
+  /* SYNTAX 1: [--info] */
+  info1 = arg_lit1(NULL, "info", "Show information about the FLI camera");
+  end1 = arg_end(20);
+  void * argtable1[] = {info1, end1};
+  argtable[1] = argtable1;
 
-  /* scan for devices */
-  fli_scan();
+  /* SYNTAX 2: [--get-temperature]  */
+  gettemp2 = arg_lit1(NULL, "get-temperature", "Print the temperature of the CCD, base and cooling power");
+  end2 = arg_end(20);
+  void * argtable2[] = {gettemp2, end2};
+  argtable[2] = argtable2;
 
-  /* open the filter */
-  camera_init();
+  /* SYNTAX 3: [--set-temperature]  */
+  settemp3 = arg_int1(NULL, "set-temperature", "N", "Set the temperature of the CCD (in Celsius)");
+  end3 = arg_end(20);
+  void * argtable3[] = {settemp3, end3};
+  argtable[3] = argtable3;
 
-  /* process and execute commands */
-  for (i = 1; i < argc; i++) {
-    if (strcmp(argv[i], "--get-temperature") == 0) {
-      ret = camera_get_temp();
-      if (ret) return ret;
-    } else if (strcmp(argv[i], "--set-temperature") == 0) {
-      if (argc < i + 1) {
-        fprintf(stderr, "The set temperature must be provided.\n");
-        return EXIT_FAILURE;
-      }
+  /* SYNTAX 4: [--fan]  */
+  fan4 = arg_str1(NULL, "fan", "(on|off)", "Turn on or off the fan");
+  end4 = arg_end(20);
+  void * argtable4[] = {fan4, end4};
+  argtable[4] = argtable4;
 
-      set_temp = atoi(argv[i + 1]);
-      i++;
+  /* SYNTAX 5: --acquire <time/sec> --shutter {open|close} --output xyz.fits
+             [--bin <bx>,<by>] [--offset <x0>,<y0>] [--size <sx>,<sy>]
+             [--gain <gain> --mode <mode>...] [--verbose]
+   */
+  acquire5 = arg_str1(NULL, "acquire", "<time>", "Exposure time in sec");
+  shutter5 = arg_str1(NULL, "shutter", "(open|close)", "Whether to open or close the shutter");
+  output5 = arg_file1(NULL, "output", "xyz.fits", "Output filename for the FITS file");
+  bin5 = arg_str0(NULL, "bin", "<bx,by>", "Binning options in X,Y format");
+  offset5 = arg_str0(NULL, "offset", "<x0,y0>", "Offset options in X,Y format");
+  size5 = arg_str0(NULL, "size", "<sx,sy>", "Sizes in X,Y format");
+  gain5 = arg_str0(NULL, "gain", "<gain>", "Gain factor");
+  mode5 = arg_str0(NULL, "mode", "(1mhz|8mhz)", "Download speed");
+  verbose5 = arg_lit0(NULL, "verbose", "Show verbose output");
+  end5 = arg_end(20);
+  void * argtable5[] = {acquire5, shutter5, output5, bin5, offset5, size5, gain5, mode5, verbose5, end5};
+  argtable[5] = argtable5;
 
-      ret = camera_set_temp(set_temp);
-      if (ret) return ret;
-    } else if (strcmp(argv[i], "--shutter") == 0) {
-      if (i + 1 < argc && strcmp(argv[i + 1], "open") == 0) {
-        ret = camera_control_shutter(1);
-        if (ret) return ret;
-        i++;
-      } else if (i + 1 < argc && strcmp(argv[i + 1], "close") == 0) {
-        ret = camera_control_shutter(0);
-        if (ret) return ret;
-        i++;
-      }
-    } else if (strcmp(argv[i], "--fan") == 0) {
-      if (i + 1 < argc && strcmp(argv[i + 1], "on") == 0) {
-        ret = camera_set_fan(1);
-        if (ret) return ret;
-        i++;
-      } else if (i + 1 < argc && strcmp(argv[i + 1], "off") == 0) {
-        ret = camera_set_fan(0);
-        if (ret) return ret;
-        i++;
-      }
-    } else if (strcmp(argv[i], "--acquire") == 0) {
-      if (argc < i + 6) {
-        fprintf(stderr, "acquire requires '--acquire <time in sec> --shutter (open|close) --output <fits filename>'\n");
-        return EXIT_FAILURE;
-      }
-      exposure_time = atof(argv[i + 1]);
-      i++;
-      i++;
-      if (i < argc && strcmp(argv[i], "--shutter") == 0) {
-        if (i + 1 < argc && strcmp(argv[i + 1], "open") == 0) {
-          is_dark = 0;
-          i++;
-        } else if (i + 1 < argc && strcmp(argv[i + 1], "close") == 0) {
-          is_dark = 1;
-          i++;
-        }
-        i++;
-      }
-      if (i + 1 < argc && strcmp(argv[i], "--output") == 0) {
-        output_filename = argv[i + 1];
-        i++;
-        i++;
-      }
-      if (i + 1 < argc && strcmp(argv[i], "--bin") == 0) {
-        binning_options = argv[i + 1];
-        i++;
-        i++;
-      }
-      if (i + 1 < argc && strcmp(argv[i], "--offset") == 0) {
-        offset_options = argv[i + 1];
-        i++;
-        i++;
-      }
-      if (i + 1 < argc && strcmp(argv[i], "--size") == 0) {
-        size_options = argv[i + 1];
-        i++;
-        i++;
-      }
-      if (i + 1 < argc && strcmp(argv[i], "--gain") == 0) {
-        gain = atof(argv[i + 1]);
-        i++;
-        i++;
-      }
-      if (i + 1 < argc && strcmp(argv[i], "--mode") == 0) {
-        download_speed = argv[i + 1];
-        i++;
-        i++;
-      }
-      if (i < argc && strcmp(argv[i], "--verbose") == 0) {
-        is_verbose = 1;
-        i++;
-      }
-      fprintf(stdout, "acquire options:\n\texposure_time: %f\n\tis_dark: %d"
-              "\n\toutput: %s\n\tbinning_options: %s"
-              "\n\toffset_options: %s\n\tsize_options: %s\n\tgain: %f"
-              "\n\tdownload_speed: %s\n\tis_verbose: %d\n", exposure_time,
-              is_dark, output_filename, binning_options, offset_options, size_options, gain,
-              download_speed, is_verbose);
-    } else if (strcmp(argv[i], "--info") == 0) {
-      ret = camera_info();
-      if (ret) return ret;
+  /* SYNTAX 6: [--help]*/
+  help6 = arg_lit1(NULL, "help", "Print this help");
+  end6 = arg_end(20);
+  void * argtable6[] = {help6, end6};
+  argtable[6] = argtable6;
+
+  /* verify all argtable[] entries were allocated sucessfully */
+  for (i = 1; i <= NUMBER_OF_DIFFERENT_SYNTAXES; i++) {
+    if (arg_nullcheck(argtable[i]) != 0) {
+      printf("%s: insufficient memory\n", progname);
+      return EXIT_FAILURE;
     }
   }
 
-  /* close the filter handle */
-  camera_fini();
+  /* parse all argument possibilities */
+  for (i = 1; i <= NUMBER_OF_DIFFERENT_SYNTAXES; i++) {
+    nerrors[i] = arg_parse(argc, argv, argtable[i]);
+  }
+
+  /* select the right command */
+  /* --info */
+  if (nerrors[1] == 0) {
+    if (info1->count > 0) {
+      ret = camera_init();
+      if (ret) return ret;
+      ret = camera_info();
+      if (ret) return ret;
+      ret = camera_fini();
+      if (ret) return ret;
+      return 0;
+    }
+    /* --get-temperature */
+  } else if (nerrors[2] == 0) {
+    if (gettemp2->count > 0) {
+      ret = camera_init();
+      if (ret) return ret;
+      ret = camera_get_temp();
+      if (ret) return ret;
+      ret = camera_fini();
+      if (ret) return ret;
+      return 0;
+    }
+    /* --set-temperature */
+  } else if (nerrors[3] == 0) {
+    if (settemp3->count > 0) {
+      ret = camera_init();
+      if (ret) return ret;
+      ret = camera_set_temp(settemp3->ival[0]);
+      if (ret) return ret;
+      ret = camera_fini();
+      if (ret) return ret;
+      return 0;
+    }
+    /* --fan */
+  } else if (nerrors[4] == 0) {
+    if (strcmp("on", fan4->sval[0]) == 0) {
+      ret = camera_init();
+      if (ret) return ret;
+      ret = camera_set_fan(1);
+    } else if (strcmp("off", fan4->sval[0]) == 0) {
+      ret = camera_init();
+      if (ret) return ret;
+      ret = camera_set_fan(0);
+    } else {
+      fprintf(stderr, "Cannot parse the option for --fan.\n");
+      ret = -1;
+    }
+    if (ret) return ret;
+    ret = camera_fini();
+    if (ret) return ret;
+    return 0;
+    /* --acquire */
+  } else if (nerrors[5] == 0) {
+    if (acquire5->count > 0) {
+      //camera_acquire();
+    }
+    /* --help */
+  } else if (nerrors[6] == 0) {
+    if (help6) {
+      ret = camera_help();
+      if (ret) return ret;
+      return 0;
+    }
+    /* incorrent or partially incorrect argument syntaxes */
+  } else {
+    if (settemp3->count > 0) {
+      arg_print_errors(stdout, end3, progname);
+      printf("usage: %s ", progname);
+      arg_print_syntax(stdout, argtable3, "\n");
+    } else if (fan4->count > 0) {
+      arg_print_errors(stdout, end4, progname);
+      printf("usage: %s ", progname);
+      arg_print_syntax(stdout, argtable4, "\n");
+    } else if (acquire5->count > 0) {
+      arg_print_errors(stdout, end5, progname);
+      printf("usage: %s ", progname);
+      arg_print_syntax(stdout, argtable5, "\n");
+    } else {
+      printf("%s: unable to parse arguments, see syntax below:\n", progname);
+      ret = 0;
+      ret = camera_help();
+      return ret;
+    }
+    return EXIT_FAILURE;
+  }
+
+  /* no command line options at all */
+  printf("Try '%s --help' for more information.\n", progname);
   return (EXIT_SUCCESS);
 }
 
 int camera_fini() {
+  int i;
   if (fli->active_camera != FLI_INVALID_DEVICE) {
-    fli_unlock_and_close_device(&fli->active_camera);
+    return fli_unlock_and_close_device(&fli->active_camera);
+  }
+  for (i = 1; i <= NUMBER_OF_DIFFERENT_SYNTAXES; i++) {
+    arg_freetable(argtable[i], sizeof (argtable[i]) / sizeof (argtable[i][0]));
   }
   return (0);
 }
 
 int camera_init() {
+  int ret;
+  ret = fli_scan();
+  if (ret) return ret;
   if (fli->num_cameras == 1 && fli->active_camera == FLI_INVALID_DEVICE) {
-    fli_open_and_lock_first_camera(&fli->active_camera);
+    ret = fli_open_and_lock_first_camera(&fli->active_camera);
+    if (ret) return ret;
   } else {
     if (fli->num_cameras == 0) {
       fprintf(stderr, "Could not find any cameras\n");
     } else {
       fprintf(stderr, "Found more than 1 cameras, but flicamtest can only handle 1 camera ATM\n");
     }
-    return (EXIT_FAILURE);
+    return -1;
   }
   return (0);
 }
@@ -273,4 +320,21 @@ int camera_set_fan(int status) {
   } else {
     return -1;
   }
+}
+
+int camera_help() {
+  int i;
+  for (i = 1; i <= NUMBER_OF_DIFFERENT_SYNTAXES; i++) {
+    if (i == 1) {
+      printf("Usage: %s", progname);
+    } else {
+      printf("       %s", progname);
+    }
+    arg_print_syntax(stdout, argtable[i], "\n");
+  }
+  printf("Explanation of the options:\n");
+  for (i = 1; i <= NUMBER_OF_DIFFERENT_SYNTAXES; i++) {
+    arg_print_glossary_gnu(stdout, argtable[i]);
+  }
+  return 0;
 }

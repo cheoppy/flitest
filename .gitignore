@@ -22,3 +22,6 @@ nbproject/*
 # Binaries
 fliflttest
 flicamtest
+
+# SContruct DB
+.sconsign.dblite
