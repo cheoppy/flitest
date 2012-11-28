@@ -1,3 +1,10 @@
+/*
+ * File:   fli_common.c
+ * Author: Gergely Csépány (gcsepany@flyseye.net)
+ *
+ * Created on November 26, 2012, 12:55 PM
+ */
+
 #include "fli_common.h"
 
 /* domains for the FLIList command  */

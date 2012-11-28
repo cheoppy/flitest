@@ -1,16 +1,23 @@
 /*
  * File:   fli_common.h
- * Author: cheoppy
+ * Author: Gergely Csépány (gcsepany@flyseye.net)
  *
  * Created on November 26, 2012, 12:37 PM
  */
 #ifndef FLI_COMMON_H
 #define	FLI_COMMON_H
 
+#define _BSD_SOURCE
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "libfli.h"
+
+#include <unistd.h>
+
+//#define DOFLIAPI(F) { if ((status = (F)) != 0) { printf("%s failed in %s, line %d. status = %d\n", #F, __FILE__, __LINE__, status); ThreadState = TS_DONE; break; } }
+#define CALLFLIAPI(F, G) { if (fli_check_error((F), G)) return -1; }
 
 #ifdef	__cplusplus
 extern "C" {
