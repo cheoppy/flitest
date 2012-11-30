@@ -1,0 +1,46 @@
+<h1>FLItest (flitest)</h1>
+
+<p>A test program for <a href="http://www.flicamera.com/">Finger Lakes Instrument</a> cameras and filterwheels.
+Originally developed for the MicroLine 16803 camera and the CFW-4-5 filterwheel, but might be useful for
+different cameras and filterwheels as well.</p>
+
+<p>There are two executables, <code>flicamtest</code> and <code>fliflttest</code> to test the camera and the
+filterwheel, respectively.</p>
+
+<h2>Requirements</h2>
+
+<ul>
+<li>libfli (<a href="http://www.flicamera.com/software/index.html">http://www.flicamera.com/software/index.html</a>)</li>
+<li>argtable2 (<a href="http://argtable.sourceforge.net/">http://argtable.sourceforge.net/</a>,
+<code>sudo apt-get install libargtable2-dev</code>)</li>
+<li>cfitsio (<a href="http://heasarc.gsfc.nasa.gov/fitsio/">http://heasarc.gsfc.nasa.gov/fitsio/</a>,
+<code>sudo apt-get install libcfitsio3-dev</code>)</li>
+</ul>
+
+<h2>Language</h2>
+
+<p>C99.</p>
+
+<h2>Syntax</h2>
+
+<pre><code>flicamtest:
+flicamtest --info
+flicamtest --get-temperature
+flicamtest --set-temperature=N
+flicamtest --fan=(on|off)
+flicamtest --shutter=(open|close)
+flicamtest --acquire=&lt;time&gt; --shutter=(open|close) --output=xyz.fits [--bin=&lt;bx,by&gt;] [--offset=&lt;x0,y0&gt;] [--size=&lt;sx,sy&gt;] [--mode=(1mhz|8mhz)] [--verbose]
+flicamtest --help
+
+fliflttest:
+fliflttest --info
+fliflttest --set-filter=N
+fliflttest --home
+fliflttest --help
+</code></pre>
+
+<p>The explanation of the options can be acquired by <code>flicamtest --help</code> or <code>fliflttest --help</code>.</p>
+
+<h2>License</h2>
+
+<p>WTFPL, see LICENSE.</p>
