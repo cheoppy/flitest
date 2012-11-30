@@ -29,5 +29,7 @@ argtable_common.o:
 
 clean:
 	rm -f *.o
+
+distclean: clean
 	rm -f fliflttest
 	rm -f flicamtest
