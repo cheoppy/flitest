@@ -12,10 +12,10 @@ Requirements
 ------------
 
 * libfli ([http://www.flicamera.com/software/index.html](http://www.flicamera.com/software/index.html))
-* argtable2 ([http://argtable.sourceforge.net/](http://argtable.sourceforge.net/),
-  `sudo apt-get install libargtable2-dev`)
+* argtable ([http://argtable.sourceforge.net/](http://argtable.sourceforge.net/),
+  on Ubuntu/Debian: `sudo apt-get install libargtable2-dev`)
 * cfitsio ([http://heasarc.gsfc.nasa.gov/fitsio/](http://heasarc.gsfc.nasa.gov/fitsio/),
-  `sudo apt-get install libcfitsio3-dev`)
+  on Ubuntu/Debian: `sudo apt-get install libcfitsio3-dev`)
 
 Language
 --------
