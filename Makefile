@@ -2,7 +2,7 @@ SHELL=/bin/sh
 
 GCC=gcc
 
-CFLAGS=-Wall -pedantic -std=c99 -g -I/usr/local/include -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu
+CFLAGS=-Wall -pedantic -std=c99 -g -L/usr/local/lib -L/usr/lib/x86_64-linux-gnu
 LFLAGS=-lfli -lm -largtable2 -lcfitsio
 
 .PHONY: all clean

@@ -21,6 +21,15 @@ filterwheel, respectively.</p>
 
 <p>C99.</p>
 
+<h2>Building</h2>
+
+<p>You can use either <code>make</code> or <code>scons</code> to build the executables. No <code>./configure</code> is provided,
+thus you might need to update the library paths in the <code>Makefile</code> or <code>SContruct</code> file.
+The <code>Makefile</code> expects that the <code>gcc</code> executable is available in <code>PATH</code>.</p>
+
+<p>Currently the <code>-g</code> debug flag is included for the compilation to ease debugging,
+but it can be safely removed.</p>
+
 <h2>Syntax</h2>
 
 <pre><code>flicamtest:
@@ -29,7 +38,9 @@ flicamtest --get-temperature
 flicamtest --set-temperature=N
 flicamtest --fan=(on|off)
 flicamtest --shutter=(open|close)
-flicamtest --acquire=&lt;time&gt; --shutter=(open|close) --output=xyz.fits [--bin=&lt;bx,by&gt;] [--offset=&lt;x0,y0&gt;] [--size=&lt;sx,sy&gt;] [--mode=(1mhz|8mhz)] [--verbose]
+flicamtest --acquire=&lt;time&gt; --shutter=(open|close) --output=xyz.fits
+           [--bin=&lt;bx,by&gt;] [--offset=&lt;x0,y0&gt;] [--size=&lt;sx,sy&gt;]
+           [--mode=(1mhz|8mhz)] [--verbose]
 flicamtest --help
 
 fliflttest:
@@ -43,4 +54,4 @@ fliflttest --help
 
 <h2>License</h2>
 
-<p>WTFPL, see LICENSE.</p>
+<p><a href="http://en.wikipedia.org/wiki/WTFPL">WTFPL</a>, see LICENSE.</p>

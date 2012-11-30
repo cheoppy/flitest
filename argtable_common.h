@@ -1,6 +1,6 @@
 /*
  * File:   argtable_common.h
- * Author: cheoppy
+ * Author: Gergely Csépány (gcsepany@flyseye.net)
  *
  * Created on November 28, 2012, 2:00 PM
  */

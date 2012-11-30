@@ -22,6 +22,16 @@ Language
 
 C99.
 
+Building
+--------
+
+You can use either `make` or `scons` to build the executables. No `./configure` is provided,
+thus you might need to update the library paths in the `Makefile` or `SContruct` file.
+The `Makefile` expects that the `gcc` executable is available in `PATH`.
+
+Currently the `-g` debug flag is included for the compilation to ease debugging,
+but it can be safely removed.
+
 Syntax
 ------
     flicamtest:
@@ -30,7 +40,9 @@ Syntax
     flicamtest --set-temperature=N
     flicamtest --fan=(on|off)
     flicamtest --shutter=(open|close)
-    flicamtest --acquire=<time> --shutter=(open|close) --output=xyz.fits [--bin=<bx,by>] [--offset=<x0,y0>] [--size=<sx,sy>] [--mode=(1mhz|8mhz)] [--verbose]
+    flicamtest --acquire=<time> --shutter=(open|close) --output=xyz.fits
+               [--bin=<bx,by>] [--offset=<x0,y0>] [--size=<sx,sy>]
+               [--mode=(1mhz|8mhz)] [--verbose]
     flicamtest --help
 
     fliflttest:
@@ -44,4 +56,4 @@ The explanation of the options can be acquired by `flicamtest --help` or `fliflt
 License
 -------
 
-WTFPL, see LICENSE.
+[WTFPL](http://en.wikipedia.org/wiki/WTFPL), see LICENSE.

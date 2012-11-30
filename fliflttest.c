@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
   void * argtable4[] = {help4, end4};
   argtable[4] = argtable4;
 
-  /* verify all argtable[] entries were allocated sucessfully */
+  /* verify all argtable[] entries were allocated successfully */
   for (i = 1; i <= NUMBER_OF_DIFFERENT_SYNTAXES; i++) {
     if (arg_nullcheck(argtable[i]) != 0) {
       printf("%s: insufficient memory\n", progname);
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
       if (ret) return ret;
       return 0;
     }
-    /* incorrent or partially incorrect argument syntaxes */
+    /* incorrect or partially incorrect argument syntaxes */
   } else {
     if (setfilter2->count > 0) {
       arg_print_errors(stdout, end2, progname);

@@ -87,7 +87,7 @@ int main(int argc, char** argv) {
   void * argtable7[] = {help7, end7};
   argtable[7] = argtable7;
 
-  /* verify all argtable[] entries were allocated sucessfully */
+  /* verify all argtable[] entries were allocated successfully */
   for (i = 1; i <= NUMBER_OF_DIFFERENT_SYNTAXES; i++) {
     if (arg_nullcheck(argtable[i]) != 0) {
       printf("%s: insufficient memory\n", progname);
@@ -234,7 +234,7 @@ int main(int argc, char** argv) {
       if (ret) return ret;
       return 0;
     }
-    /* incorrent or partially incorrect argument syntaxes */
+    /* incorrect or partially incorrect argument syntaxes */
   } else {
     if (settemp3->count > 0) {
       arg_print_errors(stdout, end3, progname);
@@ -572,7 +572,7 @@ int camera_acquire(float exposure_time, int is_dark, char * output_filename,
     CALLFLIAPI(FLISetFrameType(fli->active_camera, FLI_FRAME_TYPE_NORMAL), "FLISetFrameType");
   }
 
-  /* get visible pixel coords */
+  /* get visible pixel coordinates */
   long visible_ul_x, visible_ul_y, visible_lr_x, visible_lr_y;
   if (is_verbose) fprintf(stdout, "getting the visible sizes\n");
   CALLFLIAPI(FLIGetVisibleArea(fli->active_camera, &visible_ul_x, &visible_ul_y, &visible_lr_x, &visible_lr_y), "FLIGetVisibleArea");
@@ -630,7 +630,7 @@ int camera_acquire(float exposure_time, int is_dark, char * output_filename,
  * @param output_filename string, where to save the FITS file
  * @param sx, integer, horizontal image size
  * @param sy, integer, vertical image size
- * @param data, rows of a two dimensonal integer array, image data
+ * @param data, rows of a two dimensional integer array, image data
  * @return  Zero on success, non-zero on failure.
  */
 int camera_save_fits_image(char * output_filename, long sx, long sy, unsigned short * data) {
@@ -651,13 +651,9 @@ int camera_save_fits_image(char * output_filename, long sx, long sy, unsigned sh
     return status;
   }
 
-  /* write the required keywords for the primary array image.     */
-  /* Since bitpix = USHORT_IMG, this will cause cfitsio to create */
-  /* a FITS image with BITPIX = 16 (signed short integers) with   */
-  /* BSCALE = 1.0 and BZERO = 32768.  This is the convention that */
-  /* FITS uses to store unsigned integers.  Note that the BSCALE  */
-  /* and BZERO keywords will be automatically written by cfitsio  */
-  /* in this case.                                                */
+  /* the setting of bitpix = USHORT_IMG implies that BITPIX = 16,
+   BSCALE = 1.0 and BZERO = 32768, and the latter two keywords are
+   added automatically. */
   if (fits_create_img(fptr, bitpix, naxis, naxes, &status)) {
     if (status) fits_report_error(stderr, status);
     return status;

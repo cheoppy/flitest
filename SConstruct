@@ -11,7 +11,3 @@ Program('flicamtest', ['flicamtest.o', 'fli_common.o', 'argtable_common.o'],
   LIBS = libs,
   LIBPATH = libpath,
   CCFLAGS = cflags)
-Program('cookbook', ['cookbook.c'],
-  LIBS = libs,
-  LIBPATH = libpath,
-  CCFLAGS = cflags)

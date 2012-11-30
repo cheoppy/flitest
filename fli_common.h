@@ -16,7 +16,6 @@
 
 #include <unistd.h>
 
-//#define DOFLIAPI(F) { if ((status = (F)) != 0) { printf("%s failed in %s, line %d. status = %d\n", #F, __FILE__, __LINE__, status); ThreadState = TS_DONE; break; } }
 #define CALLFLIAPI(F, G) { if (fli_check_error((F), G)) return -1; }
 
 #ifdef	__cplusplus
