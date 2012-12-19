@@ -18,6 +18,7 @@
 #include <regex.h>
 #include <fitsio.h>
 #include <fitsio2.h>
+#include <sys/time.h>
 
 extern fli_status * fli;
 
@@ -602,8 +603,8 @@ int camera_acquire(float exposure_time, int is_dark, char * output_filename,
   /* wait until expose is ready */
   long timeleft = 1;
   while (timeleft) {
-    if (is_verbose) fprintf(stdout, "checking the exposure status...\n");
     CALLFLIAPI(FLIGetExposureStatus(fli->active_camera, &timeleft), "FLIGetExposureStatus");
+    if (is_verbose) fprintf(stdout, "checking the exposure status (%ld ms to go) ...\n", timeleft);
     usleep(1000 * 100);
   }
 
@@ -611,11 +612,31 @@ int camera_acquire(float exposure_time, int is_dark, char * output_filename,
   img = (unsigned short*) malloc(sy * sx * sizeof (unsigned short));
 
   /* download the image */
-  if (is_verbose) fprintf(stdout, "downloading the image (speed: %s)...\n", one_mhz_speed ? "1 MHz" : "8 MHz");
+  struct timeval t0, t1;
+  clock_t cpu_clock;
+  long number_of_pixels = sx*sy;
+
+  if (is_verbose) fprintf(stdout, "downloading the image (canonical speed: %s)...\n", one_mhz_speed ? "1 MHz" : "8 MHz");
+  /* start the time measurement */
+  cpu_clock = clock();
+  gettimeofday(&t0, 0);
   for (i = 0; i < sy; i++) {
     CALLFLIAPI(FLIGrabRow(fli->active_camera, &img[i * sx], sx), "FLIGrabRow");
   }
+  /* finish the time measurement */
+  cpu_clock = clock() - cpu_clock;
+  gettimeofday(&t1, 0);
 
+  long long elapsed = (t1.tv_sec - t0.tv_sec)*1000000LL + t1.tv_usec - t0.tv_usec;
+  float elapsed_sec = elapsed / (1000.0 * 1000.0);
+  float cpu_usage = ((float) cpu_clock) / CLOCKS_PER_SEC / elapsed_sec * 100.0;
+  float real_download_speed = (((float) number_of_pixels) / (1000.0 * 1000.0)) / elapsed_sec;
+
+  if (is_verbose) fprintf(stdout, "download time: %10.6f s, real speed: %6.4f MHz\n", elapsed_sec, real_download_speed);
+  if (is_verbose) fprintf(stdout, "average CPU usage during download: %6.2f%%\n", cpu_usage);
+
+  /* save the image */
+  if (is_verbose) fprintf(stdout, "saving the image (%s)...\n", output_filename);
   err = camera_save_fits_image(output_filename, sx, sy, img);
   if (err) return err;
 
