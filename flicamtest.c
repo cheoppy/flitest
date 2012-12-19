@@ -629,7 +629,7 @@ int camera_acquire(float exposure_time, int is_dark, char * output_filename,
 
   long long elapsed = (t1.tv_sec - t0.tv_sec)*1000000LL + t1.tv_usec - t0.tv_usec;
   float elapsed_sec = elapsed / (1000.0 * 1000.0);
-  float cpu_usage = ((float) cpu_clock) / CLOCKS_PER_SEC / elapsed_sec * 100.0;
+  float cpu_usage = ((float) cpu_clock) / CLOCKS_PER_SEC / ((float) sysconf(_SC_NPROCESSORS_ONLN)) / elapsed_sec * 100.0;
   float real_download_speed = (((float) number_of_pixels) / (1000.0 * 1000.0)) / elapsed_sec;
 
   if (is_verbose) fprintf(stdout, "download time: %10.6f s, real speed: %6.4f MHz\n", elapsed_sec, real_download_speed);
